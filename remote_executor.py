@@ -107,26 +107,8 @@ if result:
         #ssh.exec_command("echo {} | rm remote_execution.py".format(self.remote_password) if sudo else "rm remote_execution.py")
         ssh.close()
         return str(return_value)
-
+    
     def ls(self, path=None, shell_check=True, *args, **kwargs):
-        if "python_version" not in kwargs.keys():
-            kwargs["python_version"] = "python3"
-        else:
-            if "python" in args and not "python3" in args:
-                kwargs["python_version"] = "python"
-                args = self.__remove_from_tuple(args, "python")
-            else:
-                kwargs["python_version"] = "python3"
-                args = self.__remove_from_tuple(args, "python3")
-
-        if "sudo" not in kwargs.keys():
-            kwargs["sudo"] = False
-        else:
-            for arg in args:
-                if isinstance(arg, bool):
-                    kwargs["sudo"] = arg
-                    args = self.__remove_from_tuple(args, arg)
-
         ls_function_str = inspect.getsource(Local.ls)
         return self.run_remote_command(ls_function_str, path=path, shell_check=shell_check, *args, **kwargs)
 
@@ -145,8 +127,7 @@ class Local(RemoteExecutor):
 
 if __name__ == "__main__":
     Local.ls()
-
-    # Konvertiere die ls-Funktion in einen String
+    Local.ls("C:/Users/Admin/Desktop/Neuer Ordner")
 
     """
     ls_function_str = inspect.getsource(Local.ls)
@@ -156,4 +137,11 @@ if __name__ == "__main__":
     """
 
     Remote = RemoteExecutor(remote_host='192.168.128.128', remote_user='ubuntu', remote_password='linux')
-    Remote.ls(python_version="python")
+
+    print(Remote.ls(python_version="python"))
+    Remote.ls("/etc/network")
+    Remote.ls(path="/etc/default")
+    Remote.ls(path="/etc/netplan", python_version="python")
+    print(Remote.ls(False))
+    print(Remote.ls(shell_check=False))
+
